@@ -1,2 +1,0 @@
-defmodule BencheeJSON do
-end
