@@ -16,7 +16,7 @@ defmodule BencheeJSON.Mixfile do
 
   defp deps do
     [
-      {:benchee, "~> 0.3.0"},
+      {:benchee, "~> 0.5.0"},
       {:poison, "~> 2.2"},
       {:ex_doc,  "~> 0.11", only: :dev},
       {:earmark, "~> 0.2",  only: :dev}
