@@ -28,7 +28,7 @@ defmodule Benchee.Formatters.JSON do
   configuration under `%{json: %{file: "my.json"}}`
   """
   def output(map)
-  def output(suite = %{config: %{json: %{file: filename}} }) do
+  def output(suite = %{config: %{json: %{file: filename}}}) do
     suite
     |> format
     |> Benchee.Utility.File.each_input(filename, fn(file, content) ->
@@ -61,10 +61,12 @@ defmodule Benchee.Formatters.JSON do
 
   """
   def format(%{statistics: statistics, run_times: run_times}) do
-    Enum.map(statistics, fn({input, statistics_map}) ->
-      run_times_list = run_times[input]
-      {input, format_measurements(statistics_map, run_times_list)}
-    end) |> Map.new
+    statistics
+    |> Enum.map(fn({input, statistics_map}) ->
+         run_times_list = run_times[input]
+         {input, format_measurements(statistics_map, run_times_list)}
+       end)
+    |> Map.new
   end
 
   @doc """
