@@ -2,25 +2,28 @@ defmodule Benchee.Formatters.JSONTest do
   use ExUnit.Case
   doctest Benchee.Formatters.JSON
 
-  @filename "test.json"
   test ".output returns the suite again unchanged" do
     suite = %{
       config: %{
-        json: %{file: @filename}
+        json: %{file: "test.json"}
         },
       statistics: %{
-        "My Job" => %{
-          some: "value"
+        "Input" => %{
+          "My Job" => %{
+            some: "value"
+          }
         }
       },
-      run_times: %{"My Job" => [1, 2, 3]}
+      run_times: %{"Input" => %{"My Job" => [1, 2, 3]}}
     }
+    filename = "test_input.json"
 
     try do
       return = Benchee.Formatters.JSON.output(suite)
       assert return == suite
+      assert File.exists?(filename)
     after
-      File.rm! @filename
+      if File.exists?(filename), do: File.rm! filename
     end
   end
 end
