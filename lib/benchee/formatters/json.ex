@@ -29,12 +29,11 @@ defmodule Benchee.Formatters.JSON do
   """
   def output(map)
   def output(suite = %{config: %{json: %{file: filename}} }) do
-    json =
-      suite
-      |> format
-      |> Benchee.Utility.File.each_input(filename, fn(file, content) ->
-           IO.write(file, content)
-         end)
+    suite
+    |> format
+    |> Benchee.Utility.File.each_input(filename, fn(file, content) ->
+         IO.write(file, content)
+       end)
 
     suite
   end
