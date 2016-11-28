@@ -17,9 +17,9 @@ defmodule BencheeJSON.Mixfile do
   defp deps do
     [
       {:benchee, "~> 0.6", git: "git@github.com:PragTob/benchee.git"},
-      {:poison, "~> 2.2"},
+      {:poison,  "~> 3.0"},
       {:ex_doc,  "~> 0.11", only: :dev},
-      {:earmark, "~> 0.2",  only: :dev}
+      {:earmark, "~> 1.0",  only: :dev}
     ]
   end
 end
