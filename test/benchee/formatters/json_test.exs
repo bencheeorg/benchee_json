@@ -1,5 +1,6 @@
 defmodule Benchee.Formatters.JSONTest do
   use ExUnit.Case
+  import ExUnit.CaptureIO
   doctest Benchee.Formatters.JSON
 
   test ".output returns the suite again unchanged" do
@@ -19,8 +20,10 @@ defmodule Benchee.Formatters.JSONTest do
     filename = "test_input.json"
 
     try do
-      return = Benchee.Formatters.JSON.output(suite)
-      assert return == suite
+      capture_io fn ->
+        return = Benchee.Formatters.JSON.output(suite)
+        assert return == suite
+      end
       assert File.exists?(filename)
     after
       if File.exists?(filename), do: File.rm! filename
