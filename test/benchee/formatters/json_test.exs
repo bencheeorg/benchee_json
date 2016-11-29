@@ -11,7 +11,7 @@ defmodule Benchee.Formatters.JSONTest do
       statistics: %{
         "Input" => %{
           "My Job" => %{
-            some: "value"
+            average: 22.0
           }
         }
       },
@@ -28,5 +28,21 @@ defmodule Benchee.Formatters.JSONTest do
     after
       if File.exists?(filename), do: File.rm! filename
     end
+  end
+
+  test ".format includes sort_order" do
+    suite = %{
+      run_times: %{"Some Input" =>"dontcare"},
+      statistics: %{"Some Input" =>
+        %{
+          "My Job" => %{average: 500.0},
+          "Other Job" => %{average: 400.0},
+          "Abakus" => %{average: 450.0}
+        }
+      }
+    }
+
+    decoded_result = Poison.decode!(Benchee.Formatters.JSON.format(suite)["Some Input"])
+    assert decoded_result["sort_order"] == ["Other Job", "Abakus", "My Job"]
   end
 end

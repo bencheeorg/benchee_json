@@ -54,7 +54,7 @@ defmodule Benchee.Formatters.JSON do
       iex> Benchee.Formatters.JSON.format(suite)
       %{
         "Some Input" =>
-          "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
+          "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
       }
 
   """
@@ -78,9 +78,19 @@ defmodule Benchee.Formatters.JSON do
       ...>   std_dev: 200.0, std_dev_ratio: 0.4, std_dev_ips: 800.0,
       ...>   median: 450.0}}
       iex> Benchee.Formatters.JSON.format_measurements(statistics, run_times)
-      "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
+      "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
   """
   def format_measurements(statistics, run_times) do
-    Poison.encode! %{run_times: run_times, statistics: statistics}
+    Poison.encode! %{
+      run_times: run_times,
+      statistics: statistics,
+      sort_order: sort_order(statistics)}
+  end
+
+  # Sort order as determined by `Benchee.Statistics.sort`
+  defp sort_order(statistics) do
+    statistics
+    |> Benchee.Statistics.sort
+    |> Enum.map(fn({name, _}) -> name end)
   end
 end
