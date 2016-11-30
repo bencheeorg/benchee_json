@@ -7,18 +7,20 @@ defmodule Benchee.Formatters.JSON do
   The most basic use case is to configure it as one of the formatters to be
   used by `Benchee.run/2`.
 
-      Benchee.run(
-        %{
-          formatters: [
-            &Benchee.Formatters.JSON.output/1,
-            &Benchee.Formatters.Console.output/1
-          ],
-          json: %{file: "my.json"}
-        },
-        %{
-          "flat_map"    => fn -> Enum.flat_map(list, map_fun) end,
-          "map.flatten" => fn -> list |> Enum.map(map_fun) |> List.flatten end
-        })
+      list = Enum.to_list(1..10_000)
+      map_fun = fn(i) -> [i, i * i] end
+
+      Benchee.run(%{
+        "flat_map"    => fn -> Enum.flat_map(list, map_fun) end,
+        "map.flatten" => fn -> list |> Enum.map(map_fun) |> List.flatten end
+      },
+        formatters: [
+          &Benchee.Formatters.JSON.output/1,
+          &Benchee.Formatters.Console.output/1
+        ],
+        json: [file: "my.json"]
+      )
+
 
   """
 
