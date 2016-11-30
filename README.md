@@ -1,4 +1,4 @@
-# BencheeJSON
+# BencheeJSON [![Build Status](https://travis-ci.org/PragTob/benchee_json.svg?branch=master)](https://travis-ci.org/PragTob/benchee_json)
 
 Formates a benchee benchmarking suite to a JSON representation and can also write it to disk. Actively used in [benchee_html](https://github.com/PragTob/benchee_html) to generate JSON, and embed it into the JavaScript to give the JS access to the benchmaring results for grpahing purposes.
 
