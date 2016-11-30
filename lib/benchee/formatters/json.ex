@@ -36,7 +36,7 @@ defmodule Benchee.Formatters.JSON do
     suite
   end
   def output(_suite) do
-    raise "You need to specify a file to write the csv to in the configuration as %{csv: %{file: \"my.csv\"}}"
+    raise "You need to specify a file to write the JSON to in the configuration as %{json: %{file: \"my.json\"}}"
   end
 
   @doc """
