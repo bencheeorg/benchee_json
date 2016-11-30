@@ -26,7 +26,7 @@ defmodule BencheeJSON.Mixfile do
 
   defp deps do
     [
-      {:benchee, "~> 0.6", git: "git@github.com:PragTob/benchee.git"},
+      {:benchee, "~> 0.6"},
       {:poison,  "~> 3.0"},
       {:credo,   "~> 0.4",  only: :dev},
       {:ex_doc,  "~> 0.14", only: :dev},
