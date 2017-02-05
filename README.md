@@ -1,4 +1,4 @@
-# benchee_json [![Hex Version](https://img.shields.io/hexpm/v/benchee_json.svg)](https://hex.pm/packages/benchee_json) [![Build Status](https://travis-ci.org/PragTob/benchee_json.svg?branch=master)](https://travis-ci.org/PragTob/benchee_json)
+# benchee_json [![Hex Version](https://img.shields.io/hexpm/v/benchee_json.svg)](https://hex.pm/packages/benchee_json) [![Build Status](https://travis-ci.org/PragTob/benchee_json.svg?branch=master)](https://travis-ci.org/PragTob/benchee_json) [![Coverage Status](https://coveralls.io/repos/github/PragTob/benchee_json/badge.svg?branch=master)](https://coveralls.io/github/PragTob/benchee_json?branch=master)
 
 Formates a benchee benchmarking suite to a JSON representation and can also write it to disk. Actively used in [benchee_html](https://github.com/PragTob/benchee_html) to generate JSON, and embed it into the JavaScript to give the JS access to the benchmaring results for grpahing purposes.
 
