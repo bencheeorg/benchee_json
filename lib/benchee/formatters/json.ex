@@ -84,9 +84,46 @@ defmodule Benchee.Formatters.JSON do
   """
   def format_measurements(statistics, run_times) do
     Poison.encode! %{
-      run_times: run_times,
+      run_times:  run_times,
       statistics: statistics,
       sort_order: sort_order(statistics)}
+  end
+
+  @doc """
+  Picks exactly the values for that one job and puts them into one JSON.
+
+  ## Examples
+
+      iex> run_times = %{
+      ...>   "My Job"    => [200, 400, 400, 400, 500, 500, 700, 900],
+      ...>   "Other Job" => [300, 100, 1400, 1400, 1600]
+      ...> }
+      iex> statistics = %{
+      ...>   "My Job" => %{
+      ...>     average: 500.0,
+      ...>      ips: 2000.0,
+      ...>     std_dev: 200.0,
+      ...>     std_dev_ratio: 0.4,
+      ...>     std_dev_ips: 800.0,
+      ...>     median: 450.0
+      ...>   },
+      ...>   "Other Job" => %{
+      ...>     average: 700.0,
+      ...>     ips: 1700.0,
+      ...>     std_dev: 500.0,
+      ...>     std_dev_ratio: 0.7,
+      ...>     std_dev_ips: 1200.0,
+      ...>     median: 650.0
+      ...>   }
+      ...>}
+      iex> Benchee.Formatters.JSON.format_job("My Job", statistics, run_times)
+      "{\\"statistics\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0},\\"run_times\\":[200,400,400,400,500,500,700,900]}"
+  """
+  def format_job(job_name, statistics, run_times) do
+    Poison.encode! %{
+      statistics: Map.fetch!(statistics, job_name),
+      run_times:  Map.fetch!(run_times, job_name)
+    }
   end
 
   # Sort order as determined by `Benchee.Statistics.sort`
