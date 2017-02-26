@@ -32,7 +32,7 @@ defmodule BencheeJSON.Mixfile do
   defp deps do
     [
       {:benchee,     "~> 0.6"},
-      {:poison,      "~> 3.0"},
+      {:poison,      ">= 1.4.0"},
       {:excoveralls, "~> 0.6.1", only: :test},
       {:credo,       "~> 0.4",   only: :dev},
       {:ex_doc,      "~> 0.14",  only: :dev},
