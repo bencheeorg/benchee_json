@@ -63,7 +63,7 @@ defmodule Benchee.Formatters.JSON do
   def format(%{statistics: statistics, run_times: run_times}) do
     statistics
     |> Enum.map(fn({input, statistics_map}) ->
-         run_times_list = run_times[input]
+         run_times_list = Map.fetch!(run_times, input)
          {input, format_measurements(statistics_map, run_times_list)}
        end)
     |> Map.new
