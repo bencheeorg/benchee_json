@@ -83,10 +83,11 @@ defmodule Benchee.Formatters.JSON do
       "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
   """
   def format_measurements(statistics, run_times) do
-    Poison.encode! %{
+    encode! %{
       run_times:  run_times,
       statistics: statistics,
-      sort_order: sort_order(statistics)}
+      sort_order: sort_order(statistics)
+    }
   end
 
   # Sort order as determined by `Benchee.Statistics.sort`
@@ -94,5 +95,16 @@ defmodule Benchee.Formatters.JSON do
     statistics
     |> Benchee.Statistics.sort
     |> Enum.map(fn({name, _}) -> name end)
+  end
+
+  @doc """
+  Simple wrapper for encoding a map/benchee structure to JSON.
+
+  Decouples it from the actual JSON library (currently Poison) used by
+  benchee_json so that other plugins can rely on it just working with a general
+  Benchee suite structure.
+  """
+  def encode!(benchee_structure) do
+    Poison.encode!(benchee_structure)
   end
 end
