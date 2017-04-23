@@ -2,6 +2,9 @@ language: elixir
 elixir:
   - 1.2.6
   - 1.3.4
-  - 1.4.0
+  - 1.4.2
+otp_release:
+  - 18.3
+  - 19.2
 script: mix coveralls.travis
 before_script: MIX_ENV=test mix compile --warnings-as-errors
