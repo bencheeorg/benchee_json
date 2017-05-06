@@ -18,7 +18,7 @@ defmodule Benchee.Formatters.JSON do
           &Benchee.Formatters.JSON.output/1,
           &Benchee.Formatters.Console.output/1
         ],
-        json: [file: "my.json"]
+        formatter_options: [json: [file: "my.json"]]
       )
 
 
@@ -27,10 +27,13 @@ defmodule Benchee.Formatters.JSON do
   @doc """
   Uses `Benchee.Formatters.JSON.format/1` to transform the statistics output to
   a JSON, but also already writes it to a file defined in the initial
-  configuration under `%{json: %{file: "my.json"}}`
+  configuration under `formatter_options: %{json: %{file: "my.json"}}`
   """
+  @spec output(Benchee.Suite.t) :: Benchee.Suite.t
   def output(map)
-  def output(suite = %{config: %{json: %{file: filename}}}) do
+  def output(suite = %{configuration:
+                       %{formatter_options:
+                          %{json: %{file: filename}}}}) do
     suite
     |> format
     |> Benchee.Utility.FileCreation.each(filename)
@@ -38,7 +41,7 @@ defmodule Benchee.Formatters.JSON do
     suite
   end
   def output(_suite) do
-    raise "You need to specify a file to write the JSON to in the configuration as %{json: %{file: \"my.json\"}}"
+    raise "You need to specify a file to write the JSON to in the configuration as formatter_options: [json: [file: \"my.json\"]]"
   end
 
   @doc """
@@ -60,6 +63,7 @@ defmodule Benchee.Formatters.JSON do
       }
 
   """
+  @spec format(Benchee.Suite.t) :: %{Benchee.Suite.key => String.t}
   def format(%{statistics: statistics, run_times: run_times}) do
     statistics
     |> Enum.map(fn({input, statistics_map}) ->
@@ -82,6 +86,7 @@ defmodule Benchee.Formatters.JSON do
       iex> Benchee.Formatters.JSON.format_measurements(statistics, run_times)
       "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
   """
+  @spec format_measurements(Benchee.Statistics.t, [number]) :: String.t
   def format_measurements(statistics, run_times) do
     encode! %{
       run_times:  run_times,

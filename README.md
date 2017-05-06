@@ -28,7 +28,7 @@ Benchee.run(%{
     &Benchee.Formatters.JSON.output/1,
     &Benchee.Formatters.Console.output/1
   ],
-  json: [file: "my.json"]
+  formatter_options: [json: [file: "my.json"]]
 )
 ```
 

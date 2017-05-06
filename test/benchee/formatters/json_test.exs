@@ -5,8 +5,8 @@ defmodule Benchee.Formatters.JSONTest do
 
   test ".output returns the suite again unchanged" do
     suite = %{
-      config: %{
-        json: %{file: "test.json"}
+      configuration: %Benchee.Configuration{
+        formatter_options: %{json: %{file: "test.json"}}
         },
       statistics: %{
         "Input" => %{
