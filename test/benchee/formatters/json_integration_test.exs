@@ -4,18 +4,26 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
 
 @file_path "test.json"
 test "works just fine" do
+  basic_test time: 0.01,
+             warmup: 0.02,
+             formatters: [&Benchee.Formatters.JSON.output/1],
+             formatter_options: [json: [file: @file_path]]
+end
+
+test "works fine with old school formatter specification" do
+  basic_test time: 0.01,
+             warmup: 0.02,
+             formatters: [&Benchee.Formatters.JSON.output/1],
+             json: [file: @file_path]
+end
+
+defp basic_test(options) do
   try do
     capture_io fn ->
       Benchee.run %{
-        time: 0.01,
-        warmup: 0.02,
-        formatters: [&Benchee.Formatters.JSON.output/1],
-        json: %{file: @file_path}
-      },
-      %{
         "Sleep"        => fn -> :timer.sleep(10) end,
         "Sleep longer" => fn -> :timer.sleep(20) end
-      }
+      }, options
 
       assert File.exists?(@file_path)
       content = File.read! @file_path
