@@ -1,5 +1,4 @@
 defmodule Benchee.Formatters.JSON do
-
   @moduledoc """
   Functionality for converting Benchee benchmarking results to JSON so that
   they can be written to file or just generated for your usage.
@@ -21,8 +20,9 @@ defmodule Benchee.Formatters.JSON do
         formatter_options: [json: [file: "my.json"]]
       )
 
-
   """
+
+  alias Benchee.{Suite, Statistics}
 
   @doc """
   Uses `Benchee.Formatters.JSON.format/1` to transform the statistics output to
@@ -86,7 +86,7 @@ defmodule Benchee.Formatters.JSON do
       iex> Benchee.Formatters.JSON.format_measurements(statistics, run_times)
       "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
   """
-  @spec format_measurements(Benchee.Statistics.t, [number]) :: String.t
+  @spec format_measurements(%{Suite.key => Statistics.t}, %{Suite.key => [number]}) :: String.t
   def format_measurements(statistics, run_times) do
     encode! %{
       run_times:  run_times,
