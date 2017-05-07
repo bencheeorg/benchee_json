@@ -1,3 +1,9 @@
+# 0.3.1 - 2017-05-07
+
+## Bugfixes
+
+* Fixed broken typespec for `.format_measurements`, thanks to @sasa1977's [help](https://elixirforum.com/t/dialyzer-gets-nested-map-wrong-and-errors-out-number-vs-map/4976)
+
 # 0.3.0 - 2017-05-07
 
 Benchee 0.8.0 compatibility, basic typespecs and droppinx elixir 1.2 support.
