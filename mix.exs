@@ -1,12 +1,12 @@
 defmodule BencheeJSON.Mixfile do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.3.0"
   def project do
     [
       app: :benchee_json,
       version: @version,
-      elixir: "~> 1.2",
+      elixir: "~> 1.3",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -31,7 +31,7 @@ defmodule BencheeJSON.Mixfile do
 
   defp deps do
     [
-      {:benchee,     "~> 0.6", github: "PragTob/benchee"},
+      {:benchee,     "~> 0.8"},
       {:poison,      ">= 1.4.0"},
       {:excoveralls, "~> 0.6.1", only: :test},
       {:credo,       "~> 0.4",   only: :dev},
