@@ -84,7 +84,7 @@ defmodule Benchee.Formatters.JSON do
     |> Map.new
   end
 
-  defp format_scenarios_for_input(scenarios) do
+  def format_scenarios_for_input(scenarios) do
     %{}
     |> add_statistics(scenarios)
     |> add_sort_order(scenarios)
