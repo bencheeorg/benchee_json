@@ -10,9 +10,9 @@ defmodule Benchee.Formatters.JSON do
       map_fun = fn(i) -> [i, i * i] end
 
       Benchee.run(%{
-        "flat_map"    => fn -> Enum.flat_map(list, map_fun) end,
-        "map.flatten" => fn -> list |> Enum.map(map_fun) |> List.flatten end
-      },
+          "flat_map"    => fn -> Enum.flat_map(list, map_fun) end,
+          "map.flatten" => fn -> list |> Enum.map(map_fun) |> List.flatten end
+        },
         formatters: [
           &Benchee.Formatters.JSON.output/1,
           &Benchee.Formatters.Console.output/1
@@ -22,18 +22,17 @@ defmodule Benchee.Formatters.JSON do
 
   """
 
-  alias Benchee.{Suite, Statistics}
+  alias Benchee.{Suite, Configuration, Benchmark.Scenario}
 
   @doc """
   Uses `Benchee.Formatters.JSON.format/1` to transform the statistics output to
   a JSON, but also already writes it to a file defined in the initial
   configuration under `formatter_options: %{json: %{file: "my.json"}}`
   """
-  @spec output(Benchee.Suite.t) :: Benchee.Suite.t
-  def output(map)
-  def output(suite = %{configuration:
-                       %{formatter_options:
-                          %{json: %{file: filename}}}}) do
+  @spec output(Suite.t) :: Suite.t
+  def output(suite = %Suite{configuration: %Configuration{
+                        formatter_options: %{json: %{file: filename}}
+                      }}) do
     suite
     |> format
     |> Benchee.Utility.FileCreation.each(filename)
@@ -49,57 +48,74 @@ defmodule Benchee.Formatters.JSON do
   JSON with run_times and statistics.
 
   ## Examples
-
-      iex> suite = %{
-      ...>   run_times: %{"Some Input" =>
-      ...>     %{"My Job" => [200, 400, 400, 400, 500, 500, 700, 900]}},
-      ...>   statistics: %{"Some Input" =>
-      ...>     %{"My Job" => %{average: 500.0, ips: 2000.0, std_dev: 200.0,
-      ...>       std_dev_ratio: 0.4, std_dev_ips: 800.0, median: 450.0}}}}
+      iex> suite = %Benchee.Suite{
+      ...>      scenarios: [
+      ...>        %Benchee.Benchmark.Scenario{
+      ...>          job_name: "My Job",
+      ...>          run_times: [200, 400, 400, 400, 500, 500, 700, 900],
+      ...>          input_name: "Some Input",
+      ...>          input: "Some Input",
+      ...>          run_time_statistics: %Benchee.Statistics{
+      ...>            average:       500.0,
+      ...>            ips:           2000.0,
+      ...>            std_dev:       200.0,
+      ...>            std_dev_ratio: 0.4,
+      ...>            std_dev_ips:   800.0,
+      ...>            median:        450.0,
+      ...>            minimum:       200,
+      ...>            maximum:       900,
+      ...>            sample_size:   8
+      ...>          }
+      ...>        },
+      ...>      ]
+      ...>    }
       iex> Benchee.Formatters.JSON.format(suite)
-      %{
-        "Some Input" =>
-          "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
-      }
+      %{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}
 
   """
-  @spec format(Benchee.Suite.t) :: %{Benchee.Suite.key => String.t}
-  def format(%{statistics: statistics, run_times: run_times}) do
-    statistics
-    |> Enum.map(fn({input, statistics_map}) ->
-         run_times_list = Map.fetch!(run_times, input)
-         {input, format_measurements(statistics_map, run_times_list)}
+
+  @spec format(Suite.t) :: %{Suite.key => String.t}
+  def format(%Suite{scenarios: scenarios}) do
+    scenarios
+    |> Enum.group_by(fn(scenario) -> scenario.input_name end)
+    |> Enum.map(fn({input, scenarios}) ->
+         {input, format_scenarios_for_input(scenarios)}
        end)
     |> Map.new
   end
 
-  @doc """
-  Transforms the benchmarking results of run times and staistics (for one input)
-  to JSON.
+  def format_scenarios_for_input(scenarios) do
+    %{}
+    |> add_statistics(scenarios)
+    |> add_sort_order(scenarios)
+    |> add_run_times(scenarios)
+    |> encode!
+  end
 
-  ## Examples
-
-      iex> run_times  = %{"My Job" => [200, 400, 400, 400, 500, 500, 700, 900]}
-      iex> statistics =  %{"My Job" => %{average: 500.0, ips: 2000.0,
-      ...>   std_dev: 200.0, std_dev_ratio: 0.4, std_dev_ips: 800.0,
-      ...>   median: 450.0}}
-      iex> Benchee.Formatters.JSON.format_measurements(statistics, run_times)
-      "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"median\\":450.0,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"
-  """
-  @spec format_measurements(%{Suite.key => Statistics.t}, %{Suite.key => [number]}) :: String.t
-  def format_measurements(statistics, run_times) do
-    encode! %{
-      run_times:  run_times,
-      statistics: statistics,
-      sort_order: sort_order(statistics)
-    }
+  defp add_statistics(output, scenarios) do
+    statistics = scenarios
+                 |> Enum.map(fn(scenario) ->
+                      {scenario.job_name, scenario.run_time_statistics}
+                    end)
+                 |> Map.new
+    Map.put(output, "statistics", statistics)
   end
 
   # Sort order as determined by `Benchee.Statistics.sort`
-  defp sort_order(statistics) do
-    statistics
-    |> Benchee.Statistics.sort
-    |> Enum.map(fn({name, _}) -> name end)
+  defp add_sort_order(output, scenarios) do
+    sort_order = scenarios
+                 |> Benchee.Statistics.sort
+                 |> Enum.map(fn(%Scenario{job_name: job_name}) -> job_name end)
+    Map.put(output, "sort_order", sort_order)
+  end
+
+  defp add_run_times(output, scenarios) do
+    run_times = scenarios
+                |> Enum.map(fn(scenario) ->
+                     {scenario.job_name, scenario.run_times}
+                   end)
+                |> Map.new
+    Map.put(output, "run_times", run_times)
   end
 
   @doc """

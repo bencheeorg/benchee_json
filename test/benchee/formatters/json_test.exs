@@ -4,42 +4,131 @@ defmodule Benchee.Formatters.JSONTest do
   doctest Benchee.Formatters.JSON
 
   test ".output returns the suite again unchanged" do
-    suite = %{
-      configuration: %Benchee.Configuration{
-        formatter_options: %{json: %{file: "test.json"}}
+    filename = "test.json"
+    suite = %Benchee.Suite{
+      scenarios: [
+        %Benchee.Benchmark.Scenario{
+          job_name: "My Job",
+          run_times: [500],
+          input_name: "Some Input",
+          input: "Some Input",
+          run_time_statistics: %Benchee.Statistics{
+            average:       500.0,
+            ips:           2000.0,
+            std_dev:       200.0,
+            std_dev_ratio: 0.4,
+            std_dev_ips:   800.0,
+            median:        450.0,
+            minimum:       200,
+            maximum:       900,
+            sample_size:   8
+          }
         },
-      statistics: %{
-        "Input" => %{
-          "My Job" => %{
-            average: 22.0
+        %Benchee.Benchmark.Scenario{
+          job_name: "Other Job",
+          run_times: [400],
+          input_name: "Some Input",
+          input: "Some Input",
+          run_time_statistics: %Benchee.Statistics{
+            average:       400.0,
+            ips:           2000.0,
+            std_dev:       200.0,
+            std_dev_ratio: 0.4,
+            std_dev_ips:   800.0,
+            median:        450.0,
+            minimum:       200,
+            maximum:       900,
+            sample_size:   8
+          }
+        },
+        %Benchee.Benchmark.Scenario{
+          job_name: "Abakus",
+          run_times: [450],
+          input_name: "Some Input",
+          input: "Some Input",
+          run_time_statistics: %Benchee.Statistics{
+            average:       450.0,
+            ips:           2000.0,
+            std_dev:       200.0,
+            std_dev_ratio: 0.4,
+            std_dev_ips:   800.0,
+            median:        450.0,
+            minimum:       200,
+            maximum:       900,
+            sample_size:   8
           }
         }
-      },
-      run_times: %{"Input" => %{"My Job" => [1, 2, 3]}}
+      ],
+      configuration: %Benchee.Configuration{
+        formatter_options: %{json: %{file: filename}}
+      }
     }
-    filename = "test_input.json"
 
     try do
       capture_io fn ->
         return = Benchee.Formatters.JSON.output(suite)
         assert return == suite
       end
-      assert File.exists?(filename)
     after
       if File.exists?(filename), do: File.rm! filename
     end
   end
 
   test ".format includes sort_order" do
-    suite = %{
-      run_times: %{"Some Input" =>"dontcare"},
-      statistics: %{"Some Input" =>
-        %{
-          "My Job" => %{average: 500.0},
-          "Other Job" => %{average: 400.0},
-          "Abakus" => %{average: 450.0}
+    suite = %Benchee.Suite{
+      scenarios: [
+        %Benchee.Benchmark.Scenario{
+          job_name: "My Job",
+          run_times: [500],
+          input_name: "Some Input",
+          input: "Some Input",
+          run_time_statistics: %Benchee.Statistics{
+            average:       500.0,
+            ips:           2000.0,
+            std_dev:       200.0,
+            std_dev_ratio: 0.4,
+            std_dev_ips:   800.0,
+            median:        450.0,
+            minimum:       200,
+            maximum:       900,
+            sample_size:   8
+          }
+        },
+        %Benchee.Benchmark.Scenario{
+          job_name: "Other Job",
+          run_times: [400],
+          input_name: "Some Input",
+          input: "Some Input",
+          run_time_statistics: %Benchee.Statistics{
+            average:       400.0,
+            ips:           2000.0,
+            std_dev:       200.0,
+            std_dev_ratio: 0.4,
+            std_dev_ips:   800.0,
+            median:        450.0,
+            minimum:       200,
+            maximum:       900,
+            sample_size:   8
+          }
+        },
+        %Benchee.Benchmark.Scenario{
+          job_name: "Abakus",
+          run_times: [450],
+          input_name: "Some Input",
+          input: "Some Input",
+          run_time_statistics: %Benchee.Statistics{
+            average:       450.0,
+            ips:           2000.0,
+            std_dev:       200.0,
+            std_dev_ratio: 0.4,
+            std_dev_ips:   800.0,
+            median:        450.0,
+            minimum:       200,
+            maximum:       900,
+            sample_size:   8
+          }
         }
-      }
+      ]
     }
 
     decoded_result = Poison.decode!(Benchee.Formatters.JSON.format(suite)["Some Input"])
