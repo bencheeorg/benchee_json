@@ -22,6 +22,8 @@ defmodule Benchee.Formatters.JSON do
 
   """
 
+  @behaviour Benchee.Formatter
+
   alias Benchee.{Suite, Configuration, Benchmark.Scenario}
 
   @doc """
@@ -31,11 +33,11 @@ defmodule Benchee.Formatters.JSON do
   """
   @spec output(Suite.t) :: Suite.t
   def output(suite = %Suite{configuration: %Configuration{
-                        formatter_options: %{json: %{file: filename}}
+                        formatter_options: %{json: %{file: _}}
                       }}) do
     suite
     |> format
-    |> Benchee.Utility.FileCreation.each(filename)
+    |> write
 
     suite
   end
@@ -64,27 +66,39 @@ defmodule Benchee.Formatters.JSON do
       ...>            median:        450.0,
       ...>            minimum:       200,
       ...>            maximum:       900,
+      ...>            mode:          400,
       ...>            sample_size:   8
       ...>          }
       ...>        },
-      ...>      ]
+      ...>      ],
+      ...>      configuration: %Benchee.Configuration{
+      ...>        formatter_options: %{json: %{file: "my_file.json"}}
+      ...>      }
       ...>    }
       iex> Benchee.Formatters.JSON.format(suite)
-      %{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}
+      {%{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"mode\\":400,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}, "my_file.json"}
 
   """
 
-  @spec format(Suite.t) :: %{Suite.key => String.t}
-  def format(%Suite{scenarios: scenarios}) do
-    scenarios
-    |> Enum.group_by(fn(scenario) -> scenario.input_name end)
-    |> Enum.map(fn({input, scenarios}) ->
-         {input, format_scenarios_for_input(scenarios)}
-       end)
-    |> Map.new
+  @spec format(Suite.t) :: {%{Suite.key => String.t}, String.t}
+  def format(%Suite{scenarios: scenarios, configuration:
+               %Configuration{formatter_options: %{json: %{file: filename}}}}) do
+    data = scenarios
+           |> Enum.group_by(fn(scenario) -> scenario.input_name end)
+           |> Enum.map(fn({input, scenarios}) ->
+               {input, format_scenarios_for_input(scenarios)}
+             end)
+           |> Map.new
+    {data, filename}
   end
 
-  def format_scenarios_for_input(scenarios) do
+  @spec write({%{Suite.key => String.t}, String.t}) :: :ok
+  def write({data, filename}) do
+    Benchee.Utility.FileCreation.each(data, filename)
+    :ok
+  end
+
+  defp format_scenarios_for_input(scenarios) do
     %{}
     |> add_statistics(scenarios)
     |> add_sort_order(scenarios)
