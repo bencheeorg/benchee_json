@@ -128,10 +128,14 @@ defmodule Benchee.Formatters.JSONTest do
             sample_size:   8
           }
         }
-      ]
+      ],
+      configuration: %Benchee.Configuration{
+        formatter_options: %{json: %{file: "my_file.json"}}
+      }
     }
 
-    decoded_result = Poison.decode!(Benchee.Formatters.JSON.format(suite)["Some Input"])
+    {data, _} = Benchee.Formatters.JSON.format(suite)
+    decoded_result = Poison.decode!(data["Some Input"])
     assert decoded_result["sort_order"] == ["Other Job", "Abakus", "My Job"]
   end
 end
