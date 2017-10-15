@@ -67,7 +67,8 @@ defmodule Benchee.Formatters.JSON do
       ...>            minimum:       200,
       ...>            maximum:       900,
       ...>            mode:          400,
-      ...>            sample_size:   8
+      ...>            sample_size:   8,
+      ...>            percentiles:   %{99 => 900}
       ...>          }
       ...>        },
       ...>      ],
@@ -76,7 +77,7 @@ defmodule Benchee.Formatters.JSON do
       ...>      }
       ...>    }
       iex> Benchee.Formatters.JSON.format(suite)
-      {%{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"mode\\":400,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}, "my_file.json"}
+      {%{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"percentiles\\":{\\"99\\":900},\\"mode\\":400,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}, "my_file.json"}
 
   """
 
@@ -98,7 +99,9 @@ defmodule Benchee.Formatters.JSON do
     :ok
   end
 
-  defp format_scenarios_for_input(scenarios) do
+  # Do not make me private, poor HTML formatter relies on me so I might
+  # deserve a @doc at some point
+  def format_scenarios_for_input(scenarios) do
     %{}
     |> add_statistics(scenarios)
     |> add_sort_order(scenarios)
