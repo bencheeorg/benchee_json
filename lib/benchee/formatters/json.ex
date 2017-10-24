@@ -1,4 +1,6 @@
 defmodule Benchee.Formatters.JSON do
+  use Benchee.Formatter
+
   @moduledoc """
   Functionality for converting Benchee benchmarking results to JSON so that
   they can be written to file or just generated for your usage.
@@ -22,28 +24,7 @@ defmodule Benchee.Formatters.JSON do
 
   """
 
-  @behaviour Benchee.Formatter
-
   alias Benchee.{Suite, Configuration, Benchmark.Scenario}
-
-  @doc """
-  Uses `Benchee.Formatters.JSON.format/1` to transform the statistics output to
-  a JSON, but also already writes it to a file defined in the initial
-  configuration under `formatter_options: %{json: %{file: "my.json"}}`
-  """
-  @spec output(Suite.t) :: Suite.t
-  def output(suite = %Suite{configuration: %Configuration{
-                        formatter_options: %{json: %{file: _}}
-                      }}) do
-    suite
-    |> format
-    |> write
-
-    suite
-  end
-  def output(_suite) do
-    raise "You need to specify a file to write the JSON to in the configuration as formatter_options: [json: [file: \"my.json\"]]"
-  end
 
   @doc """
   Formats the output of benchee to a map from input names to their associated
@@ -80,7 +61,6 @@ defmodule Benchee.Formatters.JSON do
       {%{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"percentiles\\":{\\"99\\":900},\\"mode\\":400,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}, "my_file.json"}
 
   """
-
   @spec format(Suite.t) :: {%{Suite.key => String.t}, String.t}
   def format(%Suite{scenarios: scenarios, configuration:
                %Configuration{formatter_options: %{json: %{file: filename}}}}) do
@@ -92,7 +72,15 @@ defmodule Benchee.Formatters.JSON do
            |> Map.new
     {data, filename}
   end
+  def format(_) do
+    raise "You need to specify a file to write the JSON to in the configuration as formatter_options: [json: [file: \"my.json\"]]"
+  end
 
+  @doc """
+  Uses the return value of `Benchee.Formatters.JSON.format/1` to write it to the
+  JSON file defined in the initial configuration under
+  `formatter_options: %{json: %{file: "my.json"}}`
+  """
   @spec write({%{Suite.key => String.t}, String.t}) :: :ok
   def write({data, filename}) do
     Benchee.Utility.FileCreation.each(data, filename)
