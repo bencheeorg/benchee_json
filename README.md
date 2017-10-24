@@ -8,7 +8,7 @@ Add `benchee_json` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:benchee_json, "~> 0.3", only: :dev}]
+  [{:benchee_json, "~> 0.4", only: :dev}]
 end
 ```
 
