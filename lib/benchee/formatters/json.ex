@@ -35,6 +35,7 @@ defmodule Benchee.Formatters.JSON do
       ...>      scenarios: [
       ...>        %Benchee.Benchmark.Scenario{
       ...>          job_name: "My Job",
+      ...>          name: "My Job",
       ...>          run_times: [200, 400, 400, 400, 500, 500, 700, 900],
       ...>          input_name: "Some Input",
       ...>          input: "Some Input",
@@ -100,7 +101,7 @@ defmodule Benchee.Formatters.JSON do
   defp add_statistics(output, scenarios) do
     statistics = scenarios
                  |> Enum.map(fn(scenario) ->
-                      {scenario.job_name, scenario.run_time_statistics}
+                      {scenario.name, scenario.run_time_statistics}
                     end)
                  |> Map.new
     Map.put(output, "statistics", statistics)
@@ -110,14 +111,14 @@ defmodule Benchee.Formatters.JSON do
   defp add_sort_order(output, scenarios) do
     sort_order = scenarios
                  |> Benchee.Statistics.sort
-                 |> Enum.map(fn(%Scenario{job_name: job_name}) -> job_name end)
+                 |> Enum.map(fn(%Scenario{name: name}) -> name end)
     Map.put(output, "sort_order", sort_order)
   end
 
   defp add_run_times(output, scenarios) do
     run_times = scenarios
                 |> Enum.map(fn(scenario) ->
-                     {scenario.job_name, scenario.run_times}
+                     {scenario.name, scenario.run_times}
                    end)
                 |> Map.new
     Map.put(output, "run_times", run_times)
