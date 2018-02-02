@@ -80,6 +80,7 @@ defmodule Benchee.Formatters.JSONTest do
         %Benchee.Benchmark.Scenario{
           job_name: "My Job",
           run_times: [500],
+          name: "My Job",
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
@@ -97,6 +98,7 @@ defmodule Benchee.Formatters.JSONTest do
         %Benchee.Benchmark.Scenario{
           job_name: "Other Job",
           run_times: [400],
+          name: "Other Job",
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
@@ -114,6 +116,7 @@ defmodule Benchee.Formatters.JSONTest do
         %Benchee.Benchmark.Scenario{
           job_name: "Abakus",
           run_times: [450],
+          name: "Abakus",
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
