@@ -1,3 +1,9 @@
+# Jason support for benchee structs
+require Protocol
+Enum.each([Benchee.Statistics], fn benchee_module ->
+  Protocol.derive(Jason.Encoder, benchee_module)
+end)
+
 defmodule Benchee.Formatters.JSON do
   use Benchee.Formatter
 
@@ -59,7 +65,7 @@ defmodule Benchee.Formatters.JSON do
       ...>      }
       ...>    }
       iex> Benchee.Formatters.JSON.format(suite)
-      {%{"Some Input" => "{\\"statistics\\":{\\"My Job\\":{\\"std_dev_ratio\\":0.4,\\"std_dev_ips\\":800.0,\\"std_dev\\":200.0,\\"sample_size\\":8,\\"percentiles\\":{\\"99\\":900},\\"mode\\":400,\\"minimum\\":200,\\"median\\":450.0,\\"maximum\\":900,\\"ips\\":2.0e3,\\"average\\":500.0}},\\"sort_order\\":[\\"My Job\\"],\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]}}"}, "my_file.json"}
+      {%{"Some Input" => "{\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"sort_order\\":[\\"My Job\\"],\\"statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4}}}"}, "my_file.json"}
 
   """
   @spec format(Suite.t) :: {%{Suite.key => String.t}, String.t}
@@ -132,6 +138,6 @@ defmodule Benchee.Formatters.JSON do
   Benchee suite structure.
   """
   def encode!(benchee_structure) do
-    Poison.encode!(benchee_structure)
+    Jason.encode!(benchee_structure)
   end
 end
