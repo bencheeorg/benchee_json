@@ -27,7 +27,7 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
 
         assert File.exists?(@file_path)
         content = File.read! @file_path
-        decoded = Poison.decode! content
+        decoded = Jason.decode! content
 
         assert %{"run_times" => run_times, "statistics" => statistics} = decoded
         assert map_size(run_times) == 2

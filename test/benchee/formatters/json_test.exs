@@ -138,7 +138,7 @@ defmodule Benchee.Formatters.JSONTest do
     }
 
     {data, _} = Benchee.Formatters.JSON.format(suite)
-    decoded_result = Poison.decode!(data["Some Input"])
+    decoded_result = Jason.decode!(data["Some Input"])
     assert decoded_result["sort_order"] == ["Other Job", "Abakus", "My Job"]
   end
 end

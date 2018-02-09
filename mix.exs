@@ -26,14 +26,14 @@ defmodule BencheeJSON.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :benchee, :poison]]
+    [applications: [:logger, :benchee, :jason]]
   end
 
   defp deps do
     [
       {:benchee,     "~> 0.12"},
-      {:poison,      ">= 1.4.0"},
-      {:excoveralls, "~> 0.6.1", only: :test},
+      {:jason,       "~> 1.0"},
+      {:excoveralls, "~> 0.8", only: :test},
       {:credo,       "~> 0.4",   only: :dev},
       {:ex_doc,      "~> 0.14",  only: :dev},
       {:earmark,     "~> 1.0",   only: :dev},
