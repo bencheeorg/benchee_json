@@ -1,10 +1,9 @@
-## 0.5.0 - 2018-??-??
+## 0.5.0 - 2018-02-11
 
 ### Features
 
 * Switched out the JSON library from poison to jason, this avoids inconsistent behaviour between poison 2.x and 3.x + is probably faster
 * Compatibility with the tags and names of benchee 0.12
-
 
 ## 0.4.0 - 2017-10-24
 
