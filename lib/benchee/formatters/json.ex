@@ -31,7 +31,7 @@ defmodule Benchee.Formatters.JSON do
 
   """
 
-  alias Benchee.{Suite, Configuration, Benchmark.Scenario}
+  alias Benchee.{Suite, Configuration, Statistics, Benchmark.Scenario, Utility.FileCreation}
 
   @doc """
   Formats the output of benchee to a map from input names to their associated
@@ -96,7 +96,7 @@ defmodule Benchee.Formatters.JSON do
   """
   @spec write({%{Suite.key() => String.t()}, String.t()}) :: :ok
   def write({data, filename}) do
-    Benchee.Utility.FileCreation.each(data, filename)
+    FileCreation.each(data, filename)
     :ok
   end
 
@@ -125,7 +125,7 @@ defmodule Benchee.Formatters.JSON do
   defp add_sort_order(output, scenarios) do
     sort_order =
       scenarios
-      |> Benchee.Statistics.sort()
+      |> Statistics.sort()
       |> Enum.map(fn %Scenario{name: name} -> name end)
 
     Map.put(output, "sort_order", sort_order)

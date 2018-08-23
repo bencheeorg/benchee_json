@@ -22,31 +22,29 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
   end
 
   defp basic_test(options) do
-    try do
-      capture_io(fn ->
-        Benchee.run(
-          %{
-            "Sleep" => fn -> :timer.sleep(10) end,
-            "Sleep longer" => fn -> :timer.sleep(20) end
-          },
-          options
-        )
+    capture_io(fn ->
+      Benchee.run(
+        %{
+          "Sleep" => fn -> :timer.sleep(10) end,
+          "Sleep longer" => fn -> :timer.sleep(20) end
+        },
+        options
+      )
 
-        assert File.exists?(@file_path)
-        content = File.read!(@file_path)
-        decoded = Jason.decode!(content)
+      assert File.exists?(@file_path)
+      content = File.read!(@file_path)
+      decoded = Jason.decode!(content)
 
-        assert %{"run_times" => run_times, "statistics" => statistics} = decoded
-        assert map_size(run_times) == 2
-        assert map_size(statistics) == 2
+      assert %{"run_times" => run_times, "statistics" => statistics} = decoded
+      assert map_size(run_times) == 2
+      assert map_size(statistics) == 2
 
-        assert %{"average" => _average, "ips" => _ips} = statistics["Sleep"]
-        assert [head | _tail] = run_times["Sleep longer"]
-        assert head >= 0
-      end)
-    after
-      File.rm!(@file_path)
-    end
+      assert %{"average" => _average, "ips" => _ips} = statistics["Sleep"]
+      assert [head | _tail] = run_times["Sleep longer"]
+      assert head >= 0
+    end)
+  after
+    File.rm!(@file_path)
   end
 
   test "errors when no file was specified" do
