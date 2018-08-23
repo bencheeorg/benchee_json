@@ -1,5 +1,6 @@
 # Jason support for benchee structs
 require Protocol
+
 Enum.each([Benchee.Statistics], fn benchee_module ->
   Protocol.derive(Jason.Encoder, benchee_module)
 end)
@@ -68,17 +69,22 @@ defmodule Benchee.Formatters.JSON do
       {%{"Some Input" => "{\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"sort_order\\":[\\"My Job\\"],\\"statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4}}}"}, "my_file.json"}
 
   """
-  @spec format(Suite.t) :: {%{Suite.key => String.t}, String.t}
-  def format(%Suite{scenarios: scenarios, configuration:
-               %Configuration{formatter_options: %{json: %{file: filename}}}}) do
-    data = scenarios
-           |> Enum.group_by(fn(scenario) -> scenario.input_name end)
-           |> Enum.map(fn({input, scenarios}) ->
-               {input, format_scenarios_for_input(scenarios)}
-             end)
-           |> Map.new
+  @spec format(Suite.t()) :: {%{Suite.key() => String.t()}, String.t()}
+  def format(%Suite{
+        scenarios: scenarios,
+        configuration: %Configuration{formatter_options: %{json: %{file: filename}}}
+      }) do
+    data =
+      scenarios
+      |> Enum.group_by(fn scenario -> scenario.input_name end)
+      |> Enum.map(fn {input, scenarios} ->
+        {input, format_scenarios_for_input(scenarios)}
+      end)
+      |> Map.new()
+
     {data, filename}
   end
+
   def format(_) do
     raise "You need to specify a file to write the JSON to in the configuration as formatter_options: [json: [file: \"my.json\"]]"
   end
@@ -88,7 +94,7 @@ defmodule Benchee.Formatters.JSON do
   JSON file defined in the initial configuration under
   `formatter_options: %{json: %{file: "my.json"}}`
   """
-  @spec write({%{Suite.key => String.t}, String.t}) :: :ok
+  @spec write({%{Suite.key() => String.t()}, String.t()}) :: :ok
   def write({data, filename}) do
     Benchee.Utility.FileCreation.each(data, filename)
     :ok
@@ -105,28 +111,34 @@ defmodule Benchee.Formatters.JSON do
   end
 
   defp add_statistics(output, scenarios) do
-    statistics = scenarios
-                 |> Enum.map(fn(scenario) ->
-                      {scenario.name, scenario.run_time_statistics}
-                    end)
-                 |> Map.new
+    statistics =
+      scenarios
+      |> Enum.map(fn scenario ->
+        {scenario.name, scenario.run_time_statistics}
+      end)
+      |> Map.new()
+
     Map.put(output, "statistics", statistics)
   end
 
   # Sort order as determined by `Benchee.Statistics.sort`
   defp add_sort_order(output, scenarios) do
-    sort_order = scenarios
-                 |> Benchee.Statistics.sort
-                 |> Enum.map(fn(%Scenario{name: name}) -> name end)
+    sort_order =
+      scenarios
+      |> Benchee.Statistics.sort()
+      |> Enum.map(fn %Scenario{name: name} -> name end)
+
     Map.put(output, "sort_order", sort_order)
   end
 
   defp add_run_times(output, scenarios) do
-    run_times = scenarios
-                |> Enum.map(fn(scenario) ->
-                     {scenario.name, scenario.run_times}
-                   end)
-                |> Map.new
+    run_times =
+      scenarios
+      |> Enum.map(fn scenario ->
+        {scenario.name, scenario.run_times}
+      end)
+      |> Map.new()
+
     Map.put(output, "run_times", run_times)
   end
 

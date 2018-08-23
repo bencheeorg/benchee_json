@@ -5,6 +5,7 @@ defmodule Benchee.Formatters.JSONTest do
 
   test ".output returns the suite again unchanged" do
     filename = "test.json"
+
     suite = %Benchee.Suite{
       scenarios: [
         %Benchee.Benchmark.Scenario{
@@ -13,15 +14,15 @@ defmodule Benchee.Formatters.JSONTest do
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
-            average:       500.0,
-            ips:           2000.0,
-            std_dev:       200.0,
+            average: 500.0,
+            ips: 2000.0,
+            std_dev: 200.0,
             std_dev_ratio: 0.4,
-            std_dev_ips:   800.0,
-            median:        450.0,
-            minimum:       200,
-            maximum:       900,
-            sample_size:   8
+            std_dev_ips: 800.0,
+            median: 450.0,
+            minimum: 200,
+            maximum: 900,
+            sample_size: 8
           }
         },
         %Benchee.Benchmark.Scenario{
@@ -30,15 +31,15 @@ defmodule Benchee.Formatters.JSONTest do
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
-            average:       400.0,
-            ips:           2000.0,
-            std_dev:       200.0,
+            average: 400.0,
+            ips: 2000.0,
+            std_dev: 200.0,
             std_dev_ratio: 0.4,
-            std_dev_ips:   800.0,
-            median:        450.0,
-            minimum:       200,
-            maximum:       900,
-            sample_size:   8
+            std_dev_ips: 800.0,
+            median: 450.0,
+            minimum: 200,
+            maximum: 900,
+            sample_size: 8
           }
         },
         %Benchee.Benchmark.Scenario{
@@ -47,15 +48,15 @@ defmodule Benchee.Formatters.JSONTest do
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
-            average:       450.0,
-            ips:           2000.0,
-            std_dev:       200.0,
+            average: 450.0,
+            ips: 2000.0,
+            std_dev: 200.0,
             std_dev_ratio: 0.4,
-            std_dev_ips:   800.0,
-            median:        450.0,
-            minimum:       200,
-            maximum:       900,
-            sample_size:   8
+            std_dev_ips: 800.0,
+            median: 450.0,
+            minimum: 200,
+            maximum: 900,
+            sample_size: 8
           }
         }
       ],
@@ -65,12 +66,12 @@ defmodule Benchee.Formatters.JSONTest do
     }
 
     try do
-      capture_io fn ->
+      capture_io(fn ->
         return = Benchee.Formatters.JSON.output(suite)
         assert return == suite
-      end
+      end)
     after
-      if File.exists?(filename), do: File.rm! filename
+      if File.exists?(filename), do: File.rm!(filename)
     end
   end
 
@@ -84,15 +85,15 @@ defmodule Benchee.Formatters.JSONTest do
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
-            average:       500.0,
-            ips:           2000.0,
-            std_dev:       200.0,
+            average: 500.0,
+            ips: 2000.0,
+            std_dev: 200.0,
             std_dev_ratio: 0.4,
-            std_dev_ips:   800.0,
-            median:        450.0,
-            minimum:       200,
-            maximum:       900,
-            sample_size:   8
+            std_dev_ips: 800.0,
+            median: 450.0,
+            minimum: 200,
+            maximum: 900,
+            sample_size: 8
           }
         },
         %Benchee.Benchmark.Scenario{
@@ -102,15 +103,15 @@ defmodule Benchee.Formatters.JSONTest do
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
-            average:       400.0,
-            ips:           2000.0,
-            std_dev:       200.0,
+            average: 400.0,
+            ips: 2000.0,
+            std_dev: 200.0,
             std_dev_ratio: 0.4,
-            std_dev_ips:   800.0,
-            median:        450.0,
-            minimum:       200,
-            maximum:       900,
-            sample_size:   8
+            std_dev_ips: 800.0,
+            median: 450.0,
+            minimum: 200,
+            maximum: 900,
+            sample_size: 8
           }
         },
         %Benchee.Benchmark.Scenario{
@@ -120,15 +121,15 @@ defmodule Benchee.Formatters.JSONTest do
           input_name: "Some Input",
           input: "Some Input",
           run_time_statistics: %Benchee.Statistics{
-            average:       450.0,
-            ips:           2000.0,
-            std_dev:       200.0,
+            average: 450.0,
+            ips: 2000.0,
+            std_dev: 200.0,
             std_dev_ratio: 0.4,
-            std_dev_ips:   800.0,
-            median:        450.0,
-            minimum:       200,
-            maximum:       900,
-            sample_size:   8
+            std_dev_ips: 800.0,
+            median: 450.0,
+            minimum: 200,
+            maximum: 900,
+            sample_size: 8
           }
         }
       ],
