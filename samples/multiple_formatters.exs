@@ -6,8 +6,7 @@ Benchee.run(%{
   "map.flatten" => fn -> list |> Enum.map(map_fun) |> List.flatten end
 },
   formatters: [
-    Benchee.Formatters.JSON,
+    {Benchee.Formatters.JSON, file: "my.json"},
     Benchee.Formatters.Console
-  ],
-  formatter_options: [json: [file: "my.json"]]
+  ]
 )

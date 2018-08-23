@@ -25,7 +25,7 @@ script:
   - mix credo --strict
   - if [[ "$TRAVIS_ELIXIR_VERSION" == "1.6"* ]]; then mix format --check-formatted; fi
   - mix dialyzer --halt-exit-status
-  - mix safe_coveralls.travis
+  - mix coveralls.travis
 after_script:
   - mix deps.get --only docs
   - MIX_ENV=docs mix inch.report

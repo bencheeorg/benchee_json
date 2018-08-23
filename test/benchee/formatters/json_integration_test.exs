@@ -7,17 +7,7 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
     basic_test(
       time: 0.01,
       warmup: 0.02,
-      formatters: [&Benchee.Formatters.JSON.output/1],
-      formatter_options: [json: [file: @file_path]]
-    )
-  end
-
-  test "works fine with old school formatter specification" do
-    basic_test(
-      time: 0.01,
-      warmup: 0.02,
-      formatters: [&Benchee.Formatters.JSON.output/1],
-      json: [file: @file_path]
+      formatters: [{Benchee.Formatters.JSON, file: @file_path}]
     )
   end
 
@@ -44,23 +34,6 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
       assert head >= 0
     end)
   after
-    File.rm!(@file_path)
-  end
-
-  test "errors when no file was specified" do
-    capture_io(fn ->
-      assert_raise RuntimeError, fn ->
-        Benchee.run(
-          %{
-            time: 0.01,
-            warmup: 0,
-            formatters: [&Benchee.Formatters.JSON.output/1]
-          },
-          %{
-            "Sleep" => fn -> :timer.sleep(10) end
-          }
-        )
-      end
-    end)
+    File.rm(@file_path)
   end
 end
