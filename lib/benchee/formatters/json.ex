@@ -41,6 +41,7 @@ defmodule Benchee.Formatters.JSON do
       ...>          job_name: "My Job",
       ...>          name: "My Job",
       ...>          run_times: [200, 400, 400, 400, 500, 500, 700, 900],
+      ...>          memory_usages: [200, 400, 400, 400, 500, 500, 700, 900],
       ...>          input_name: "Some Input",
       ...>          input: "Some Input",
       ...>          run_time_statistics: %Benchee.Statistics{
@@ -55,12 +56,25 @@ defmodule Benchee.Formatters.JSON do
       ...>            mode:          400,
       ...>            sample_size:   8,
       ...>            percentiles:   %{99 => 900}
+      ...>          },
+      ...>          memory_usage_statistics: %Benchee.Statistics{
+      ...>            average:       500.0,
+      ...>            ips:           nil,
+      ...>            std_dev:       200.0,
+      ...>            std_dev_ratio: 0.4,
+      ...>            std_dev_ips:   nil,
+      ...>            median:        450.0,
+      ...>            minimum:       200,
+      ...>            maximum:       900,
+      ...>            mode:          nil,
+      ...>            sample_size:   8,
+      ...>            percentiles:   %{99 => 900}
       ...>          }
       ...>        },
       ...>      ]
       ...>    }
       iex> Benchee.Formatters.JSON.format(suite, %{file: "my_file.json"})
-      %{"Some Input" => "{\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"sort_order\\":[\\"My Job\\"],\\"statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4}}}"}
+      %{"Some Input" => "{\\"memory_usage_statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":null,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":null,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":null,\\"std_dev_ratio\\":0.4}},\\"memory_usages\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"run_time_statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4}},\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"sort_order\\":[\\"My Job\\"]}"}
 
   """
   @spec format(Suite.t(), map) :: %{Suite.key() => String.t()}
@@ -97,13 +111,15 @@ defmodule Benchee.Formatters.JSON do
   @spec format_scenarios_for_input([Scenario.t()]) :: String.t()
   def format_scenarios_for_input(scenarios) do
     %{}
-    |> add_statistics(scenarios)
+    |> add_run_time_statistics(scenarios)
+    |> add_memory_usage_statistics(scenarios)
     |> add_sort_order(scenarios)
     |> add_run_times(scenarios)
+    |> add_memory_usages(scenarios)
     |> encode!
   end
 
-  defp add_statistics(output, scenarios) do
+  defp add_run_time_statistics(output, scenarios) do
     statistics =
       scenarios
       |> Enum.map(fn scenario ->
@@ -111,7 +127,18 @@ defmodule Benchee.Formatters.JSON do
       end)
       |> Map.new()
 
-    Map.put(output, "statistics", statistics)
+    Map.put(output, "run_time_statistics", statistics)
+  end
+
+  defp add_memory_usage_statistics(output, scenarios) do
+    statistics =
+      scenarios
+      |> Enum.map(fn scenario ->
+        {scenario.name, scenario.memory_usage_statistics}
+      end)
+      |> Map.new()
+
+    Map.put(output, "memory_usage_statistics", statistics)
   end
 
   # Sort order as determined by `Benchee.Statistics.sort`
@@ -133,6 +160,17 @@ defmodule Benchee.Formatters.JSON do
       |> Map.new()
 
     Map.put(output, "run_times", run_times)
+  end
+
+  defp add_memory_usages(output, scenarios) do
+    memory_usages =
+      scenarios
+      |> Enum.map(fn scenario ->
+        {scenario.name, scenario.memory_usages}
+      end)
+      |> Map.new()
+
+    Map.put(output, "memory_usages", memory_usages)
   end
 
   @doc """

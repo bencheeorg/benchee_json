@@ -6,6 +6,7 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
   test "works just fine" do
     basic_test(
       time: 0.01,
+      memory_time: 0.01,
       warmup: 0.02,
       formatters: [{Benchee.Formatters.JSON, file: @file_path}]
     )
@@ -16,7 +17,7 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
       Benchee.run(
         %{
           "Sleep" => fn -> :timer.sleep(10) end,
-          "Sleep longer" => fn -> :timer.sleep(20) end
+          "List" => fn -> [:rand.uniform()] end
         },
         options
       )
@@ -25,13 +26,24 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
       content = File.read!(@file_path)
       decoded = Jason.decode!(content)
 
-      assert %{"run_times" => run_times, "statistics" => statistics} = decoded
-      assert map_size(run_times) == 2
-      assert map_size(statistics) == 2
+      assert %{
+               "run_times" => run_times,
+               "memory_usages" => memory_usages,
+               "run_time_statistics" => run_time_statistics,
+               "memory_usage_statistics" => memory_usage_statistics
+             } = decoded
 
-      assert %{"average" => _average, "ips" => _ips} = statistics["Sleep"]
-      assert [head | _tail] = run_times["Sleep longer"]
+      assert map_size(run_times) == 2
+      assert map_size(memory_usages) == 2
+      assert map_size(run_time_statistics) == 2
+      assert map_size(memory_usage_statistics) == 2
+
+      assert %{"average" => _, "ips" => _} = run_time_statistics["Sleep"]
+      assert [head | _] = run_times["Sleep"]
       assert head >= 0
+
+      assert %{"average" => _, "median" => _} = memory_usage_statistics["List"]
+      assert [376 | _] = memory_usages["List"]
     end)
   after
     File.rm(@file_path)
