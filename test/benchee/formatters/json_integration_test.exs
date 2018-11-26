@@ -24,26 +24,21 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
 
       assert File.exists?(@file_path)
       content = File.read!(@file_path)
-      decoded = Jason.decode!(content)
+      [list, sleep] = Jason.decode!(content)
 
       assert %{
-               "run_times" => run_times,
-               "memory_usages" => memory_usages,
-               "run_time_statistics" => run_time_statistics,
-               "memory_usage_statistics" => memory_usage_statistics
-             } = decoded
+               "name" => "Sleep",
+               "run_time_statistics" => %{"average" => _, "ips" => _},
+               "run_times" => [run_time | _]
+             } = sleep
 
-      assert map_size(run_times) == 2
-      assert map_size(memory_usages) == 2
-      assert map_size(run_time_statistics) == 2
-      assert map_size(memory_usage_statistics) == 2
+      assert run_time > 10_000_000
 
-      assert %{"average" => _, "ips" => _} = run_time_statistics["Sleep"]
-      assert [head | _] = run_times["Sleep"]
-      assert head >= 0
-
-      assert %{"average" => _, "median" => _} = memory_usage_statistics["List"]
-      assert [376 | _] = memory_usages["List"]
+      assert %{
+               "name" => "List",
+               "memory_usage_statistics" => %{"average" => _, "ips" => _},
+               "memory_usages" => [376 | _]
+             } = list
     end)
   after
     File.rm(@file_path)

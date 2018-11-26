@@ -28,11 +28,14 @@ defmodule Benchee.Formatters.JSON do
 
   @behaviour Benchee.Formatter
 
-  alias Benchee.{Suite, Statistics, Benchmark.Scenario, Utility.FileCreation}
+  alias Benchee.Suite
 
   @doc """
-  Formats the output of benchee to a map from input names to their associated
-  JSON with run_times and statistics.
+  Formats the output of benchee to a list of maps, where each map represents a
+  given benchmark scenario.
+
+  Each map includes the name, input name, run times, run time statistics, memory
+  usages and memory usage statistics for each scenario.
 
   ## Examples
       iex> suite = %Benchee.Suite{
@@ -74,17 +77,23 @@ defmodule Benchee.Formatters.JSON do
       ...>      ]
       ...>    }
       iex> Benchee.Formatters.JSON.format(suite, %{file: "my_file.json"})
-      %{"Some Input" => "{\\"memory_usage_statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":null,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":null,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":null,\\"std_dev_ratio\\":0.4}},\\"memory_usages\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"run_time_statistics\\":{\\"My Job\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4}},\\"run_times\\":{\\"My Job\\":[200,400,400,400,500,500,700,900]},\\"sort_order\\":[\\"My Job\\"]}"}
+      "[{\\"input_name\\":\\"Some Input\\",\\"memory_usage_statistics\\":{\\"average\\":500.0,\\"ips\\":null,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":null,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":null,\\"std_dev_ratio\\":0.4},\\"memory_usages\\":[200,400,400,400,500,500,700,900],\\"name\\":\\"My Job\\",\\"run_time_statistics\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4},\\"run_times\\":[200,400,400,400,500,500,700,900]}]"
 
   """
-  @spec format(Suite.t(), map) :: %{Suite.key() => String.t()}
+  @spec format(Suite.t(), %{file: String.t()}) :: String.t()
   def format(%Suite{scenarios: scenarios}, %{file: _}) do
     scenarios
-    |> Enum.group_by(fn scenario -> scenario.input_name end)
-    |> Enum.map(fn {input, scenarios} ->
-      {input, format_scenarios_for_input(scenarios)}
+    |> Enum.map(fn scenario ->
+      Map.take(scenario, [
+        :name,
+        :input_name,
+        :run_time_statistics,
+        :memory_usage_statistics,
+        :run_times,
+        :memory_usages
+      ])
     end)
-    |> Map.new()
+    |> encode!()
   end
 
   def format(_, _) do
@@ -92,7 +101,7 @@ defmodule Benchee.Formatters.JSON do
     You need to specify a file to write the JSON to in the configuration a
     formatter option:
 
-      formatters: [{Benchee.Formatters.JSON, file: \"my.json\"]]"}]
+      formatters: [{Benchee.Formatters.JSON, file: \"my.json\"}]
     """
   end
 
@@ -100,77 +109,9 @@ defmodule Benchee.Formatters.JSON do
   Uses the return value of `Benchee.Formatters.JSON.format/1` to write it to the
   JSON file defined in the initial configuration.
   """
-  @spec write(%{Suite.key() => String.t()}, map) :: :ok
+  @spec write(String.t(), map) :: :ok
   def write(data, %{file: file}) do
-    FileCreation.each(data, file)
-    :ok
-  end
-
-  # Do not make me private, poor HTML formatter relies on me
-  @doc false
-  @spec format_scenarios_for_input([Scenario.t()]) :: String.t()
-  def format_scenarios_for_input(scenarios) do
-    %{}
-    |> add_run_time_statistics(scenarios)
-    |> add_memory_usage_statistics(scenarios)
-    |> add_sort_order(scenarios)
-    |> add_run_times(scenarios)
-    |> add_memory_usages(scenarios)
-    |> encode!
-  end
-
-  defp add_run_time_statistics(output, scenarios) do
-    statistics =
-      scenarios
-      |> Enum.map(fn scenario ->
-        {scenario.name, scenario.run_time_statistics}
-      end)
-      |> Map.new()
-
-    Map.put(output, "run_time_statistics", statistics)
-  end
-
-  defp add_memory_usage_statistics(output, scenarios) do
-    statistics =
-      scenarios
-      |> Enum.map(fn scenario ->
-        {scenario.name, scenario.memory_usage_statistics}
-      end)
-      |> Map.new()
-
-    Map.put(output, "memory_usage_statistics", statistics)
-  end
-
-  # Sort order as determined by `Benchee.Statistics.sort`
-  defp add_sort_order(output, scenarios) do
-    sort_order =
-      scenarios
-      |> Statistics.sort()
-      |> Enum.map(fn %Scenario{name: name} -> name end)
-
-    Map.put(output, "sort_order", sort_order)
-  end
-
-  defp add_run_times(output, scenarios) do
-    run_times =
-      scenarios
-      |> Enum.map(fn scenario ->
-        {scenario.name, scenario.run_times}
-      end)
-      |> Map.new()
-
-    Map.put(output, "run_times", run_times)
-  end
-
-  defp add_memory_usages(output, scenarios) do
-    memory_usages =
-      scenarios
-      |> Enum.map(fn scenario ->
-        {scenario.name, scenario.memory_usages}
-      end)
-      |> Map.new()
-
-    Map.put(output, "memory_usages", memory_usages)
+    File.write!(file, data)
   end
 
   @doc """
@@ -180,7 +121,5 @@ defmodule Benchee.Formatters.JSON do
   benchee_json so that other plugins can rely on it just working with a general
   Benchee suite structure.
   """
-  def encode!(benchee_structure) do
-    Jason.encode!(benchee_structure)
-  end
+  defdelegate encode!(term), to: Jason
 end
