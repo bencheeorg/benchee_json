@@ -3,6 +3,21 @@ require Protocol
 
 Protocol.derive(Jason.Encoder, Benchee.Statistics)
 
+Protocol.derive(
+  Jason.Encoder,
+  Benchee.Benchmark.Scenario,
+  only: [
+    :name,
+    :job_name,
+    :input_name,
+    :run_time_statistics,
+    :memory_usage_statistics,
+    :run_times,
+    :memory_usages,
+    :tag
+  ]
+)
+
 defmodule Benchee.Formatters.JSON do
   @moduledoc """
   Functionality for converting Benchee benchmarking results to JSON so that
