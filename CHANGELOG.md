@@ -1,3 +1,9 @@
+## 0.6.0 - 2019-02-10
+
+### Features
+* Benchee 0.14.0 support
+* Added the serialization of memory usages
+
 ## 0.5.0 - 2018-02-11
 
 ### Features
