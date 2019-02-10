@@ -37,7 +37,7 @@ defmodule BencheeJSON.Mixfile do
       {:benchee, github: "PragTob/benchee"},
       {:jason, "~> 1.0"},
       {:excoveralls, "~> 0.8", only: :test},
-      {:credo, "~> 0.4", only: :dev},
+      {:credo, "~> 1.0", only: :dev},
       {:ex_doc, "~> 0.14", only: :dev},
       {:earmark, "~> 1.0", only: :dev},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false}
