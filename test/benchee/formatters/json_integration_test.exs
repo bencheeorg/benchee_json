@@ -12,6 +12,22 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
     )
   end
 
+  test "doesn't blow up with no data collected" do
+    capture_io(fn ->
+      assert %Benchee.Suite{} =
+               Benchee.run(
+                 %{
+                   "Sleep" => fn -> :timer.sleep(10) end
+                 },
+                 time: 0,
+                 warmup: 0,
+                 memory_time: 0
+               )
+    end)
+  after
+    File.rm(@file_path)
+  end
+
   defp basic_test(options) do
     capture_io(fn ->
       Benchee.run(
