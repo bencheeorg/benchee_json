@@ -4,10 +4,10 @@ defmodule Benchee.Formatters.JSONTest do
 
   alias Benchee.{Formatters.JSON, Suite}
 
-  describe "format/1" do
+  describe "write/1" do
     test "raises an exception if there is no file configured" do
       assert_raise RuntimeError, fn ->
-        JSON.format(%Suite{}, %{})
+        JSON.write(%Suite{}, %{})
       end
     end
   end

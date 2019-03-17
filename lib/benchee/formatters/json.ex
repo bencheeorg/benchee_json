@@ -5,16 +5,23 @@ Protocol.derive(Jason.Encoder, Benchee.Statistics)
 
 Protocol.derive(
   Jason.Encoder,
-  Benchee.Benchmark.Scenario,
+  Benchee.Scenario,
   only: [
     :name,
     :job_name,
     :input_name,
-    :run_time_statistics,
-    :memory_usage_statistics,
-    :run_times,
-    :memory_usages,
+    :run_time_data,
+    :memory_usage_data,
     :tag
+  ]
+)
+
+Protocol.derive(
+  Jason.Encoder,
+  Benchee.CollectionData,
+  only: [
+    :statistics,
+    :samples
   ]
 )
 
@@ -55,78 +62,71 @@ defmodule Benchee.Formatters.JSON do
   ## Examples
       iex> suite = %Benchee.Suite{
       ...>      scenarios: [
-      ...>        %Benchee.Benchmark.Scenario{
+      ...>        %Benchee.Scenario{
       ...>          job_name: "My Job",
       ...>          name: "My Job",
-      ...>          run_times: [200, 400, 400, 400, 500, 500, 700, 900],
-      ...>          memory_usages: [200, 400, 400, 400, 500, 500, 700, 900],
       ...>          input_name: "Some Input",
       ...>          input: "Some Input",
-      ...>          run_time_statistics: %Benchee.Statistics{
-      ...>            average:       500.0,
-      ...>            ips:           2000.0,
-      ...>            std_dev:       200.0,
-      ...>            std_dev_ratio: 0.4,
-      ...>            std_dev_ips:   800.0,
-      ...>            median:        450.0,
-      ...>            minimum:       200,
-      ...>            maximum:       900,
-      ...>            mode:          400,
-      ...>            sample_size:   8,
-      ...>            percentiles:   %{99 => 900}
+      ...>          run_time_data: %Benchee.CollectionData{
+      ...>            samples: [200, 400, 400, 400, 500, 500, 700, 900],
+      ...>            statistics: %Benchee.Statistics{
+      ...>              average:       500.0,
+      ...>              ips:           2000.0,
+      ...>              std_dev:       200.0,
+      ...>              std_dev_ratio: 0.4,
+      ...>              std_dev_ips:   800.0,
+      ...>              median:        450.0,
+      ...>              minimum:       200,
+      ...>              maximum:       900,
+      ...>              mode:          400,
+      ...>              sample_size:   8,
+      ...>              percentiles:   %{99 => 900}
+      ...>            }
       ...>          },
-      ...>          memory_usage_statistics: %Benchee.Statistics{
-      ...>            average:       500.0,
-      ...>            ips:           nil,
-      ...>            std_dev:       200.0,
-      ...>            std_dev_ratio: 0.4,
-      ...>            std_dev_ips:   nil,
-      ...>            median:        450.0,
-      ...>            minimum:       200,
-      ...>            maximum:       900,
-      ...>            mode:          nil,
-      ...>            sample_size:   8,
-      ...>            percentiles:   %{99 => 900}
+      ...>          memory_usage_data: %Benchee.CollectionData{
+      ...>            samples: [200, 400, 400, 400, 500, 500, 700, 900],
+      ...>            statistics: %Benchee.Statistics{
+      ...>              average:       500.0,
+      ...>              ips:           nil,
+      ...>              std_dev:       200.0,
+      ...>              std_dev_ratio: 0.4,
+      ...>              std_dev_ips:   nil,
+      ...>              median:        450.0,
+      ...>              minimum:       200,
+      ...>              maximum:       900,
+      ...>              mode:          nil,
+      ...>              sample_size:   8,
+      ...>              percentiles:   %{99 => 900}
+      ...>            }
       ...>          }
       ...>        },
       ...>      ]
       ...>    }
       iex> Benchee.Formatters.JSON.format(suite, %{file: "my_file.json"})
-      "[{\\"input_name\\":\\"Some Input\\",\\"memory_usage_statistics\\":{\\"average\\":500.0,\\"ips\\":null,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":null,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":null,\\"std_dev_ratio\\":0.4},\\"memory_usages\\":[200,400,400,400,500,500,700,900],\\"name\\":\\"My Job\\",\\"run_time_statistics\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4},\\"run_times\\":[200,400,400,400,500,500,700,900]}]"
+      "[{\\"name\\":\\"My Job\\",\\"job_name\\":\\"My Job\\",\\"input_name\\":\\"Some Input\\",\\"run_time_data\\":{\\"statistics\\":{\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4},\\"samples\\":[200,400,400,400,500,500,700,900]},\\"memory_usage_data\\":{\\"statistics\\":{\\"average\\":500.0,\\"ips\\":null,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":null,\\"percentiles\\":{\\"99\\":900},\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":null,\\"std_dev_ratio\\":0.4},\\"samples\\":[200,400,400,400,500,500,700,900]},\\"tag\\":null}]"
 
   """
-  @spec format(Suite.t(), %{file: String.t()}) :: String.t()
-  def format(%Suite{scenarios: scenarios}, %{file: _}) do
-    scenarios
-    |> Enum.map(fn scenario ->
-      Map.take(scenario, [
-        :name,
-        :input_name,
-        :run_time_statistics,
-        :memory_usage_statistics,
-        :run_times,
-        :memory_usages
-      ])
-    end)
-    |> encode!()
-  end
-
-  def format(_, _) do
-    raise """
-    You need to specify a file to write the JSON to in the configuration a
-    formatter option:
-
-      formatters: [{Benchee.Formatters.JSON, file: \"my.json\"}]
-    """
+  @spec format(Suite.t(), map) :: String.t()
+  def format(%Suite{scenarios: scenarios}, _) do
+    encode!(scenarios)
   end
 
   @doc """
   Uses the return value of `Benchee.Formatters.JSON.format/1` to write it to the
   JSON file defined in the initial configuration.
   """
-  @spec write(String.t(), map) :: :ok
+  @spec write(String.t(), %{file: String.t()}) :: :ok
   def write(data, %{file: file}) do
     File.write!(file, data)
+  end
+
+  def write(_, _) do
+    raise """
+    You need to specify a file to write the JSON to in the configuration a
+    formatter option:
+
+      formatters: [{Benchee.Formatters.JSON, file: \\"my.json\\"}]
+    """
   end
 
   @doc """
