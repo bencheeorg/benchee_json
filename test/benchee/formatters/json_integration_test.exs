@@ -44,16 +44,20 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
 
       assert %{
                "name" => "Sleep",
-               "run_time_statistics" => %{"average" => _, "ips" => _},
-               "run_times" => [run_time | _]
+               "run_time_data" => %{
+                 "statistics" => %{"average" => _, "ips" => _},
+                 "samples" => [run_time | _]
+               }
              } = sleep
 
       assert run_time > 10_000_000
 
       assert %{
                "name" => "List",
-               "memory_usage_statistics" => %{"average" => _, "ips" => _},
-               "memory_usages" => [376 | _]
+               "memory_usage_data" => %{
+                 "statistics" => %{"average" => _, "ips" => _},
+                 "samples" => [376 | _]
+               }
              } = list
     end)
   after
