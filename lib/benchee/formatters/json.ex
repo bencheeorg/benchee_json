@@ -112,7 +112,7 @@ defmodule Benchee.Formatters.JSON do
   end
 
   @doc """
-  Uses the return value of `Benchee.Formatters.JSON.format/1` to write it to the
+  Uses the return value of `Benchee.Formatters.JSON.format/2` to write it to the
   JSON file defined in the initial configuration.
   """
   @spec write(String.t(), %{file: String.t()}) :: :ok
