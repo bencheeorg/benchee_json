@@ -1,5 +1,5 @@
-## 0.99.0 - unreleases
-* Benchee 0.99 support
+## 1.0.0 - 2019-03-28
+* Benchee 0.99 & 1.0.0 support
 * BREAKING: data structures changed, no more `run_times`/`memory_usages`/`run_time_statitics`/`memory_usage_statistics` - it's all in `run_time_data`/`memory_usage_data` now under the keys `samples`/`statistics` to mirror the original benchee data structure.
 
 ## 0.6.0 - 2019-02-10
