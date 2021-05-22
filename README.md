@@ -1,20 +1,30 @@
-# benchee_json [![Hex Version](https://img.shields.io/hexpm/v/benchee_json.svg)](https://hex.pm/packages/benchee_json) [![Build Status](https://travis-ci.org/bencheeorg/benchee_json.svg?branch=master)](https://travis-ci.org/bencheeorg/benchee_json) [![Coverage Status](https://coveralls.io/repos/github/bencheeorg/benchee_json/badge.svg?branch=master)](https://coveralls.io/github/bencheeorg/benchee_json?branch=master)
+# benchee_json
 
-Formats a benchee benchmarking suite to a JSON representation and can also write it to disk. Actively used in [benchee_html](https://github.com/PragTob/benchee_html) to generate JSON, and embed it into the JavaScript to give the JS access to the benchmarking results for graphing purposes.
+[![Build Status](https://travis-ci.org/bencheeorg/benchee_json.svg?branch=master)](https://travis-ci.org/bencheeorg/benchee_json)
+[![Coverage Status](https://coveralls.io/repos/github/bencheeorg/benchee_json/badge.svg?branch=master)](https://coveralls.io/github/bencheeorg/benchee_json?branch=master)
+[![Module Version](https://img.shields.io/hexpm/v/benchee_json.svg)](https://hex.pm/packages/benchee_json)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/benchee_json/)
+[![Total Download](https://img.shields.io/hexpm/dt/benchee_json.svg)](https://hex.pm/packages/benchee_json)
+[![License](https://img.shields.io/hexpm/l/benchee_json.svg)](https://github.com/bencheeorg/benchee_json/blob/master/LICENSE)
+[![Last Updated](https://img.shields.io/github/last-commit/bencheeorg/benchee_json.svg)](https://github.com/bencheeorg/benchee_json/commits/master)
+
+Formats a Benchee benchmarking suite to a JSON representation and can also write it to disk.i Actively used in [benchee_html](https://github.com/PragTob/benchee_html) to generate JSON, and embed it into the JavaScript to give the JS access to the benchmarking results for graphing purposes.
 
 ## Installation
 
-Add `benchee_json` to your list of dependencies in `mix.exs`:
+Add `:benchee_json` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:benchee_json, "~> 1.0", only: :dev}]
+  [
+    {:benchee_json, "~> 1.0", only: :dev}
+  ]
 end
 ```
 
 ## Usage
 
-Like a normal benchee formatter:
+Like a normal Benchee formatter:
 
 ```elixir
 list = Enum.to_list(1..10_000)
@@ -33,7 +43,7 @@ Benchee.run(%{
 
 ## Contributing
 
-Contributions to benchee_json are very welcome! Bug reports, documentation, spelling corrections, whole features, feature ideas, bugfixes, new plugins, fancy graphics... all of those (and probably more) are much appreciated contributions!
+Contributions to `:benchee_json` are very welcome! Bug reports, documentation, spelling corrections, whole features, feature ideas, bugfixes, new plugins, fancy graphics... all of those (and probably more) are much appreciated contributions!
 
 Please respect the [Code of Conduct](//github.com/PragTob/benchee_json/blob/master/CODE_OF_CONDUCT.md).
 
@@ -51,3 +61,10 @@ A couple of (hopefully) helpful points:
 * `mix deps.get` to install dependencies
 * `mix test` to run tests
 * `mix credo` or `mix credo --strict` to find code style problems (not too strict with the 80 width limit for sample output in the docs)
+
+## Copyright and License
+
+Copyright (c) 2016 Tobias Pfeiffer
+
+This library is released under the MIT License. See the [LICENSE.md](./LICENSE.md) file
+for further details.
