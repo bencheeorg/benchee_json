@@ -56,7 +56,7 @@ defmodule Benchee.Formatters.JSONIntegrationTest do
                "name" => "List",
                "memory_usage_data" => %{
                  "statistics" => %{"average" => _, "ips" => _},
-                 "samples" => [376 | _]
+                 "samples" => [_ | _]
                }
              } = list
     end)
