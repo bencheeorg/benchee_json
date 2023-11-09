@@ -40,7 +40,7 @@ defmodule BencheeJSON.Mixfile do
       {:credo, "~> 1.0", only: :dev},
       {:ex_doc, "~> 0.14", only: :dev},
       {:earmark, "~> 1.0", only: :dev},
-      {:dialyxir, "~> 0.5", only: :dev, runtime: false}
+      {:dialyxir, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 
