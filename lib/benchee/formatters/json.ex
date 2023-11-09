@@ -102,8 +102,53 @@ defmodule Benchee.Formatters.JSON do
       ...>        },
       ...>      ]
       ...>    }
-      iex> Benchee.Formatters.JSON.format(suite, %{file: "my_file.json"})
-      "[{\\"name\\":\\"My Job\\",\\"job_name\\":\\"My Job\\",\\"input_name\\":\\"Some Input\\",\\"run_time_data\\":{\\"statistics\\":{\\"absolute_difference\\":null,\\"average\\":500.0,\\"ips\\":2.0e3,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":400,\\"percentiles\\":{\\"99\\":900},\\"relative_less\\":null,\\"relative_more\\":null,\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":800.0,\\"std_dev_ratio\\":0.4},\\"samples\\":[200,400,400,400,500,500,700,900]},\\"memory_usage_data\\":{\\"statistics\\":{\\"absolute_difference\\":null,\\"average\\":500.0,\\"ips\\":null,\\"maximum\\":900,\\"median\\":450.0,\\"minimum\\":200,\\"mode\\":null,\\"percentiles\\":{\\"99\\":900},\\"relative_less\\":null,\\"relative_more\\":null,\\"sample_size\\":8,\\"std_dev\\":200.0,\\"std_dev_ips\\":null,\\"std_dev_ratio\\":0.4},\\"samples\\":[200,400,400,400,500,500,700,900]},\\"tag\\":null}]"
+      iex> suite |> format(%{file: "my_file.json"}) |> Jason.decode!()
+      [
+        %{
+          "input_name" => "Some Input",
+          "name" => "My Job",
+          "job_name" => "My Job",
+          "tag" => nil,
+          "memory_usage_data" => %{
+            "samples" => [200, 400, 400, 400, 500, 500, 700, 900],
+            "statistics" => %{
+              "absolute_difference" => nil,
+              "average" => 500.0,
+              "ips" => nil,
+              "maximum" => 900,
+              "median" => 450.0,
+              "minimum" => 200,
+              "mode" => nil,
+              "percentiles" => %{"99" => 900},
+              "relative_less" => nil,
+              "relative_more" => nil,
+              "sample_size" => 8,
+              "std_dev" => 200.0,
+              "std_dev_ips" => nil,
+              "std_dev_ratio" => 0.4
+            }
+          },
+          "run_time_data" => %{
+            "samples" => [200, 400, 400, 400, 500, 500, 700, 900],
+            "statistics" => %{
+              "absolute_difference" => nil,
+              "average" => 500.0,
+              "ips" => 2000.0,
+              "maximum" => 900,
+              "median" => 450.0,
+              "minimum" => 200,
+              "mode" => 400,
+              "percentiles" => %{"99" => 900},
+              "relative_less" => nil,
+              "relative_more" => nil,
+              "sample_size" => 8,
+              "std_dev" => 200.0,
+              "std_dev_ips" => 800.0,
+              "std_dev_ratio" => 0.4
+            }
+          },
+        }
+      ]
 
   """
   @spec format(Suite.t(), map) :: String.t()

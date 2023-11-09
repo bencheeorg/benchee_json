@@ -1,6 +1,6 @@
 defmodule Benchee.Formatters.JSONTest do
   use ExUnit.Case, async: true
-  doctest Benchee.Formatters.JSON
+  doctest Benchee.Formatters.JSON, import: true
 
   alias Benchee.{Formatters.JSON, Suite}
 
