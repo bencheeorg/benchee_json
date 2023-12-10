@@ -1,4 +1,12 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## 1.0.0 - 2019-03-28
+
 * Benchee 0.99 & 1.0.0 support
 * BREAKING: data structures changed, no more `run_times`/`memory_usages`/`run_time_statitics`/`memory_usage_statistics` - it's all in `run_time_data`/`memory_usage_data` now under the keys `samples`/`statistics` to mirror the original benchee data structure.
 

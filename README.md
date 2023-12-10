@@ -1,14 +1,16 @@
-# benchee_json [![Hex Version](https://img.shields.io/hexpm/v/benchee_json.svg)](https://hex.pm/packages/benchee_json) [![CI](https://github.com/bencheeorg/benchee_json/actions/workflows/main.yml/badge.svg)](https://github.com/bencheeorg/benchee_json/actions/workflows/main.yml) [![Coverage Status](https://coveralls.io/repos/github/bencheeorg/benchee_json/badge.svg?branch=master)](https://coveralls.io/github/bencheeorg/benchee_json?branch=master)
+# benchee_json [![Hex Version](https://img.shields.io/hexpm/v/benchee_json.svg)](https://hex.pm/packages/benchee_json) [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/benchee_json/) [![CI](https://github.com/bencheeorg/benchee_json/actions/workflows/main.yml/badge.svg)](https://github.com/bencheeorg/benchee_json/actions/workflows/main.yml) [![Coverage Status](https://coveralls.io/repos/github/bencheeorg/benchee_json/badge.svg?branch=master)](https://coveralls.io/github/bencheeorg/benchee_json?branch=master) [![Total Download](https://img.shields.io/hexpm/dt/benchee_json.svg)](https://hex.pm/packages/benchee_json) [![License](https://img.shields.io/hexpm/l/benchee_json.svg)](https://github.com/bencheeorg/benchee_json/blob/master/LICENSE)
 
 Formats a benchee benchmarking suite to a JSON representation and can also write it to disk. Actively used in [benchee_html](https://github.com/PragTob/benchee_html) to generate JSON, and embed it into the JavaScript to give the JS access to the benchmarking results for graphing purposes.
 
 ## Installation
 
-Add `benchee_json` to your list of dependencies in `mix.exs`:
+Add `:benchee_json` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:benchee_json, "~> 1.0", only: :dev}]
+  [
+    {:benchee_json, "~> 1.0", only: :dev}
+  ]
 end
 ```
 
@@ -33,7 +35,7 @@ Benchee.run(%{
 
 ## Contributing
 
-Contributions to benchee_json are very welcome! Bug reports, documentation, spelling corrections, whole features, feature ideas, bugfixes, new plugins, fancy graphics... all of those (and probably more) are much appreciated contributions!
+Contributions to `:benchee_json` are very welcome! Bug reports, documentation, spelling corrections, whole features, feature ideas, bugfixes, new plugins, fancy graphics... all of those (and probably more) are much appreciated contributions!
 
 Please respect the [Code of Conduct](//github.com/PragTob/benchee_json/blob/master/CODE_OF_CONDUCT.md).
 
@@ -51,3 +53,10 @@ A couple of (hopefully) helpful points:
 * `mix deps.get` to install dependencies
 * `mix test` to run tests
 * `mix credo` or `mix credo --strict` to find code style problems (not too strict with the 80 width limit for sample output in the docs)
+
+## Copyright and License
+
+Copyright (c) 2016 Tobias Pfeiffer
+
+This library is released under the MIT License. See the [LICENSE.md](./LICENSE.md) file
+for further details.
