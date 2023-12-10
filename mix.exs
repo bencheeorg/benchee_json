@@ -29,12 +29,6 @@ defmodule BencheeJSON.Mixfile do
     ]
   end
 
-  def application do
-    [
-      applications: [:logger, :benchee, :jason]
-    ]
-  end
-
   defp deps do
     [
       {:benchee, ">= 0.99.0 and < 2.0.0"},
