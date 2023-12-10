@@ -1,7 +1,9 @@
 defmodule BencheeJSON.Mixfile do
   use Mix.Project
 
+  @source_url "https://github.com/PragTob/benchee_json"
   @version "1.0.0"
+
   def project do
     [
       app: :benchee_json,
@@ -10,9 +12,8 @@ defmodule BencheeJSON.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      docs: [source_ref: @version],
+      docs: docs(),
       package: package(),
-      test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
         "coveralls.detail": :test,
@@ -29,7 +30,9 @@ defmodule BencheeJSON.Mixfile do
   end
 
   def application do
-    []
+    [
+      applications: [:logger, :benchee, :jason]
+    ]
   end
 
   defp deps do
@@ -38,20 +41,36 @@ defmodule BencheeJSON.Mixfile do
       {:jason, "~> 1.0"},
       {:excoveralls, "~> 0.8", only: :test},
       {:credo, "~> 1.0", only: :dev},
-      {:ex_doc, "~> 0.14", only: :dev},
-      {:earmark, "~> 1.0", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 
   defp package do
     [
+      description: "JSON formatter for the (micro) benchmarking library benchee.",
       maintainers: ["Tobias Pfeiffer"],
       licenses: ["MIT"],
       links: %{
-        "github" => "https://github.com/PragTob/benchee_json",
-        "Blog posts" => "https://pragtob.wordpress.com/tag/benchee/"
+        "Blog posts" => "https://pragtob.wordpress.com/tag/benchee/",
+        "Changelog" => "https://github.com/bencheeorg/benchee_json/blob/main/CHANGELOG.md",
+        "GitHub" => @source_url
       }
+    ]
+  end
+
+  defp docs do
+    [
+      extras: [
+        "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md": [title: "Code of Conduct"],
+        "LICENSE.md": [title: "License"],
+        "README.md": [title: "Overview"]
+      ],
+      main: "readme",
+      source_url: @source_url,
+      source_ref: @version,
+      formatters: ["html"]
     ]
   end
 end
